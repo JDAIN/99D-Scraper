@@ -1,8 +1,8 @@
-import datasoup_with_teams
-import teamscraper
+
 import pprint
 import copy
 import re
+import json
 from collections import Counter
 
 
@@ -13,13 +13,16 @@ def check_if_switched_team_more_than_once():
         : Mehrfacher Wechsel führt zur Sperrung des Spielers für die laufende Saison und Playoffs bzw. Relegationen.
     TODO check if in team for less than 24 hrs cause of exception look into
     '''
+    #read json data
+    with open('team_player_data.json') as json_data:
+        teamdata = json.load(json_data)
     joinleave_player_list = []
-    for k, v in datasoup_with_teams.dmgdata.items():
+    for k, v in teamdata.items():
 
-        for ks, vs in datasoup_with_teams.dmgdata[k]['Teams'].items():
+        for ks, vs in teamdata[k]['Teams'].items():
 
-            if 'no players' not in datasoup_with_teams.dmgdata[k]['Teams'][ks]['Players']:
-                for kss, vss in datasoup_with_teams.dmgdata[k]['Teams'][ks]['Players'].items():
+            if 'no players' not in teamdata[k]['Teams'][ks]['Players']:
+                for kss, vss in teamdata[k]['Teams'][ks]['Players'].items():
                     if vss['join_afterSeasonStart'] or vss['leave_afterSeasonStart']:
                         joinleave_player_list.append(
                             (kss, k, v['link'], ks, vs['link'], vss['join_dates'], vss['leave_dates']))
@@ -44,14 +47,17 @@ def check_lower_div_join():
         : Spieler, die zu Beginn oder im Laufe einer jeden Saison in einem Team einer höheren Division vertreten waren, sind in einer niedrigeren Division nicht spielberechtigt.
         : Dies gilt unabhängig davon, ob bereits ein Match in der höheren Division bestritten wurde. Die Regelung ist auch für die Relegationen gültig.
     '''
+    #read json data
+    with open('team_player_data.json') as json_data:
+        teamdata = json.load(json_data)
     joinleave_player_list = []
     # copys dmgdata
-    datasoup_date = copy.deepcopy(datasoup_with_teams.dmgdata)
+    datasoup_date = copy.deepcopy(teamdata)
 
-    for k, v in datasoup_with_teams.dmgdata.items():
-        for ks, vs in datasoup_with_teams.dmgdata[k]['Teams'].items():
+    for k, v in teamdata.items():
+        for ks, vs in teamdata[k]['Teams'].items():
             # gets only teamdic from dmgdata
-            team_dic = datasoup_with_teams.dmgdata[k]['Teams'][ks]['Players']
+            team_dic = teamdata[k]['Teams'][ks]['Players']
             # print('%s : %s : %s ' % (k, ks, team_dic.keys()))
             # checks if player is a dic or just the string 'Team deleted'
             if type(datasoup_date[k]['Teams'][ks]['Players']) == dict:
