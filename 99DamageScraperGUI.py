@@ -1,8 +1,11 @@
+import sys
 from tkinter import *
 from tkinter import ttk, messagebox
 import scraper
 import threading
 import os
+import logging
+
 import time
 # TODO add ttk.Separator(master, orient=HORIZONTAL).grid(row=1, sticky='EW')
 
@@ -98,15 +101,13 @@ class DamageScraperGUI:
         sys.stdout = TextRedirector(self.log, "stdout")
 
     def start_leaguescraper(self):
-        if 'League Scrap' in threading.enumerate():
-            print('lol')
-        print(threading.enumerate())
+        logging.info(threading.enumerate())
         print(
             "_________________________\nLeague Scraper started\n_________________________")
         # TODO IF value error print error
         # 'https://csgo.99damage.de/de/leagues/99dmg/989-saison-10'
         league_scrap_thread = threading.Thread(target=scraper.scrap_league_and_div_data, args=[
-            str(self.leaguelink_entry.get()), int(self.delay_league_entry.get())], name='League Scrap')
+            str(self.leaguelink_entry.get()), int(self.delay_league_entry.get())], name='League Scrap',daemon=True)
 
 
         league_scrap_thread.start()
@@ -117,17 +118,16 @@ class DamageScraperGUI:
             "_________________________\nAdd Teamdata Scraper started\n_________________________")
         # TODO IF value error print error
         add_team_thread = threading.Thread(target=scraper.add_teamdata_to_data, args=[
-            int(self.delay_team_entry.get())])
+            int(self.delay_team_entry.get())],daemon=True)
         add_team_thread.start()
 
     def stop(self):
         # TODO did it really stop?
-        own = os.path.join(os.getcwd(), os.path.basename(sys.argv[0]))
         root.destroy()
-        os.system("python " + own)
+        for thread in threading.enumerate():
+            logging.info(thread)
+        os.system("python " + os.path.basename(sys.argv[0]))
         os.kill(os.getpid(), 9)
-
-        #os.system("python " + os.path.basename(sys.argv[0]))
         print("Stopped")
 
 

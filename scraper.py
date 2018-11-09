@@ -81,17 +81,4 @@ def add_teamdata_to_data(delay=10):
         with io.open('team_player_data.json', 'w', encoding="utf-8") as file:
             json.dump(teamdata, file, indent=4)
             print('wrote Data of %s to File' % k)
-        # with io.open('datasoup_with_teams.py', 'w', encoding="utf-8") as file:
-        #     file.write('dmgdata = ' +
-        #                pprint.pformat(teamdata, width=200))
-        #     print('wrote Data of %s to File' % k)
 
-
-# start here
-
-# needed for fullscrap (delay is 10 sec)
-# scrap_league_and_div_data(
-#     'https://csgo.99damage.de/de/leagues/99dmg/989-saison-10', 10)
-
-# only adds teamdata to already existing data (delay is 10sec)
-# add_teamdata_to_data(10)
