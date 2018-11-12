@@ -1,4 +1,4 @@
-import pprint
+﻿import pprint
 import copy
 import re
 import json
@@ -209,8 +209,13 @@ def readable99_check_lower_div_join():
 
 
 # check_lower_div_join()
+print('''Rule: D. I.
+         Das Wechseln des Teams während einer laufenden Saison ist nur ein Mal erlaubt.
+         Mehrfacher Wechsel führt zur Sperrung des Spielers für die laufende Saison und Playoffs bzw.Relegationen.\n\n\n''')
+
 check_if_switched_team_more_than_once()
 
-# pp =pprint.pformat(check_lower_div_join(), depth=8, width=500, compact=True)
-# print(pp)
-readable99_check_lower_div_join()
+
+print('\n\n____________________________________________________________\n\nSpieler, die zu Beginn oder im Laufe einer jeden Saison in einem Team einer höheren Division vertreten waren, sind in einer niedrigeren Division nicht spielberechtigt.\n\n')
+readable_check_lower_div_join()
+input('Press Any Key to close...')
