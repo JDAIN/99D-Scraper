@@ -2,8 +2,32 @@ import pprint
 import copy
 import re
 import json
-import scrap
+from datetime import datetime
 from collections import Counter
+
+
+def teamdic_change_datestrings_to_timedate_objects(dic):
+    '''
+    Enter only a teamdic
+    param dic
+    '''
+    # creates new list and replaces the datestring with an datetimeobject
+    date_team_dic = copy.deepcopy(dic)
+
+    for key in date_team_dic.keys():
+        counterjoin = 0
+        counterleave = 0
+        for i in date_team_dic[key]['join_dates']:
+            date_team_dic[key]['join_dates'][counterjoin] = datetime.strptime(
+                i, '%a, %d %b %Y %H:%M:%S %z')
+            counterjoin += 1
+
+        for i in date_team_dic[key]['leave_dates']:
+            date_team_dic[key]['leave_dates'][counterleave] = datetime.strptime(
+                i, '%a, %d %b %Y %H:%M:%S %z')
+            counterleave += 1
+    # pretty.pprint(date_team_dic)
+    return (date_team_dic)
 
 
 def check_if_switched_team_more_than_once():
@@ -63,7 +87,7 @@ def check_lower_div_join():
             # checks if player is a dic or just the string 'Team deleted'
             if type(datasoup_date[k]['Teams'][ks]['Players']) == dict:
                 # changes/updates datestrings in team_dic_date to datetime object for comparission
-                datasoup_date[k]['Teams'][ks]['Players'].update(scrap.teamdic_change_datestrings_to_timedate_objects(
+                datasoup_date[k]['Teams'][ks]['Players'].update(teamdic_change_datestrings_to_timedate_objects(
                     team_dic))
 
     for k, v in datasoup_date.items():
@@ -153,10 +177,10 @@ def readable_check_lower_div_join():
 
                 if p == 0:
                     print('aktuelles team: %s (%s) join: %s link: %s' % (
-                    player_entry[p][2], player_entry[p][1], player_entry[p][3], player_entry[p][-3]))
+                        player_entry[p][2], player_entry[p][1], player_entry[p][3], player_entry[p][-3]))
                 else:
                     print('vorheriges team: %s (%s) leave: %s link: %s' % (
-                    player_entry[p][2], player_entry[p][1], player_entry[p][4], player_entry[p][-3]))
+                        player_entry[p][2], player_entry[p][1], player_entry[p][4], player_entry[p][-3]))
         print("_________________________")
 
 
@@ -166,7 +190,7 @@ def readable99_check_lower_div_join():
     for player_entry in read_dic:
         # steam id print(player_entry[0][-2])
         if player_entry[0][-2] != '-':
-            print('[b]%s[/b]'%player_entry [0][0])  # name of player
+            print('[b]%s[/b]' % player_entry[0][0])  # name of player
             print(player_entry[0][-2])
         else:
             return
@@ -176,16 +200,16 @@ def readable99_check_lower_div_join():
 
                 if p == 0:
                     print('aktuelles team: [url="%s"]%s[/url] (%s)   Beitritt: %s' % (
-                    player_entry[p][-3], player_entry[p][2], player_entry[p][1], player_entry[p][3]))
+                        player_entry[p][-3], player_entry[p][2], player_entry[p][1], player_entry[p][3]))
                 else:
                     print('vorheriges team: [url="%s"]%s[/url] (%s) Verlassen: %s' % (
-                    player_entry[p][-3], player_entry[p][2], player_entry[p][1], player_entry[p][4]))
+                        player_entry[p][-3], player_entry[p][2], player_entry[p][1], player_entry[p][4]))
         print("_________________________")
         # [url="etetertertert"]sdfsd[/url]
 
 
 # check_lower_div_join()
-# check_if_switched_team_more_than_once()
+check_if_switched_team_more_than_once()
 
 # pp =pprint.pformat(check_lower_div_join(), depth=8, width=500, compact=True)
 # print(pp)
