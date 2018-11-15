@@ -9,7 +9,7 @@ import time
 import scrapProxylistSpys_one
 
 
-def scrap_league_and_div_data(link, delay=10):
+def scrap_league_and_div_data(link, delay=0):
     '''
     @param link
         provide 99dmg seasonlink e.g 'https://csgo.99damage.de/de/leagues/99dmg/989-saison-10'
@@ -24,7 +24,8 @@ def scrap_league_and_div_data(link, delay=10):
     league_team_data = copy.deepcopy(divlinks_list)
     amount_divs = len(league_team_data)
     counter = 0
-    est_runtime_min = round((amount_divs * delay) / 60)
+    #1.6 estimated proxy timeout 2 sec
+    est_runtime_min = round((amount_divs * 1.6) / 60)
     print('Estimated runtime: %s Minutes (Delay: %ss)' %
           (est_runtime_min, delay))
     print('Scraping 500 socks5 Proxies from spys.one')

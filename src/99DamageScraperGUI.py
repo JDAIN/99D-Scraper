@@ -56,7 +56,7 @@ class DamageScraperGUI:
 
         self.delay_league_entry = Entry(
             master, width=3, bd=2, background='#7b8189')
-        self.delay_league_entry.insert(0, 10)
+        self.delay_league_entry.insert(0, 0)
         self.delay_league_entry.grid(row=2, column=1)
 
         self.scrap_league_button = Button(
@@ -64,7 +64,7 @@ class DamageScraperGUI:
         self.scrap_league_button.grid(
             row=2, column=2, sticky=W+E)
 
-        self.runtime_label = Label(master, text="40 Min")
+        self.runtime_label = Label(master, text="8 Min",background='#353c47',fg="white")
         self.runtime_label.grid(row=2, column=3)
 
         # second row (button input saveselcetor label with time)
@@ -144,7 +144,6 @@ class TextRedirector(object):
 
 
 def on_closing():
-
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
         os.kill(os.getpid(), 9)
         root.destroy()
