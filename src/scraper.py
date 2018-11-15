@@ -1,10 +1,12 @@
 # coding=utf-8
 import copy
 import io
+import logging
 import pprint
 import scrap
 import json
 import time
+import scrapProxylistSpys_one
 
 
 def scrap_league_and_div_data(link, delay=10):
@@ -25,12 +27,18 @@ def scrap_league_and_div_data(link, delay=10):
     est_runtime_min = round((amount_divs * delay) / 60)
     print('Estimated runtime: %s Minutes (Delay: %ss)' %
           (est_runtime_min, delay))
+    print('Scraping 500 socks5 Proxies from spys.one')
+    # scraping proxies from spys.one
+    socks5list = scrapProxylistSpys_one.scrape_DACH_D_and_get_only_proxies_list()
     for k, v in divlinks_list.items():
-        teamlinks_list = scrap.get_teamlinks_dic_from_group(v['link'])
+        # passing proxies to scrap methode and getting the new proxieslist (removed slow proxies)
+        teamlinks_list, socks5list, used_proxy = scrap.get_teamlinks_dic_from_group(v['link'], socks5list)
+
         counter += 1
         league_team_data[k].update({'Teams': teamlinks_list})
-        print('(%s/%s) %s sleeping...(%ss)' %
-              (str(counter), str(amount_divs), k, str(delay)))
+        #prints number, divname and used proxy ip without port
+        print('(%s/%s) %s - %s' %
+              (str(counter), str(amount_divs), k, str(used_proxy.split(':')[0])))
         time.sleep(delay)
 
     # TODO is it? do not change the filename, is needed for add_teamdata_to_data

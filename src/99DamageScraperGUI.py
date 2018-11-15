@@ -143,17 +143,21 @@ class TextRedirector(object):
         self.widget.see(END)
 
 
-root = Tk()
-my_gui = DamageScraperGUI(root)
-
-
 def on_closing():
 
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
         os.kill(os.getpid(), 9)
         root.destroy()
 
+if __name__ == '__main__':
 
-root.protocol("WM_DELETE_WINDOW", on_closing)
-# root.geometry('400x270')
-root.mainloop()
+    root = Tk()
+    my_gui = DamageScraperGUI(root)
+
+
+
+
+
+    root.protocol("WM_DELETE_WINDOW", on_closing)
+    # root.geometry('400x270')
+    root.mainloop()

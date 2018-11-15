@@ -1,16 +1,20 @@
 # coding=utf-8
+import random
+import logging
 import requests
 import bs4
 import copy
 from datetime import datetime
 import pprint
+from user_agent import generate_user_agent
 
 
 def get_divlinks_dic_from_leaguepage(link):
     # connect
     url = link
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+        'User-Agent': generate_user_agent(device_type=("desktop", "smartphone"))}
+
     website = requests.get(url, headers=headers)
     website.raise_for_status()
     # get html
@@ -28,15 +32,34 @@ def get_divlinks_dic_from_leaguepage(link):
     return divlinks_dic
 
 
-def get_teamlinks_dic_from_group(grouplink):
+def get_teamlinks_dic_from_group(grouplink,proxy_list):
     # connect
     url = grouplink
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
-    website = requests.get(url, headers=headers)
-    website.raise_for_status()
+        'User-Agent': generate_user_agent(device_type=("desktop", "smartphone"))}
+    #use proxies to connect
+    proxl = proxy_list
+    website = None
+    while website is None:
+        try:
+            #print('connect')
+            http = random.choice(proxl)
+            logging.warning(proxl)
+            proxies = {
+                'http': 'socks5://' + http,
+                'https': 'socks5://' + http
+            }
+
+            website = requests.get(url, headers=headers,proxies=proxies,timeout=2)
+            #website.raise_for_status()
+            # print(proxies)
+            # print(headers)
+        except:
+            proxl.remove(http)
+            # print(website)
+            pass
     # get html
-    group_soup = bs4.BeautifulSoup(website.text, features="html.parser")
+    group_soup = bs4.BeautifulSoup(website.text, features="lxml")
 
     teamlinks_dic = {}
     league_element = group_soup.select('.league_table td')
@@ -47,7 +70,8 @@ def get_teamlinks_dic_from_group(grouplink):
                 teamlinks_dic[e.text.lstrip()] = {'link': e.a['href']}
         except:
             pass
-    return teamlinks_dic
+    new_proxies = proxl
+    return teamlinks_dic, new_proxies ,http
 
 
 def teamdic_change_datestrings_to_timedate_objects(dic):
