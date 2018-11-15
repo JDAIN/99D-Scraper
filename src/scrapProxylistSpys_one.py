@@ -20,7 +20,7 @@ def scrape_page(url='http://spys.one/en/socks-proxy-list/', soup='n'):
 
     request_url = requests.post(url, headers=headers, data=data)
     request_url.raise_for_status
-    print(request_url.status_code)
+    # print(request_url.status_code)
 
     if request_url.status_code == 200:
         if soup == 'y':
@@ -97,6 +97,7 @@ def scrape_and_get_only_proxies_list():
     print('Done scraping proxylist.')
     return proxieslist
 
+
 def scrape_DACH_D_and_get_only_proxies_list():
     '''
     scraps only DACH countrys + Denmark
@@ -105,7 +106,7 @@ def scrape_DACH_D_and_get_only_proxies_list():
     proxieslist = []
     # TODO filter countries out
     proxies = get_proxy_info()
-    dach = ['Germany','Austria','Switzerland','Denmark']
+    dach = ['Germany', 'Austria', 'Switzerland', 'Denmark']
     for i in range(len(proxies['ip'])):
         if proxies['country'][i] in dach:
             proxieslist.append('{}:{}'.format(
@@ -115,3 +116,21 @@ def scrape_DACH_D_and_get_only_proxies_list():
     print('Done scraping proxylist.')
     return proxieslist
 
+
+def scrape_DACH_close_countries_and_get_only_proxies_list():
+    '''
+    scraps only DACH countrys + Denmark
+    scraps and returns List with proxies in form [ip:port]
+    '''
+    proxieslist = []
+    # TODO filter countries out
+    proxies = get_proxy_info()
+    dach = ['Germany', 'Austria', 'Switzerland', 'Denmark', 'Poland', 'United Kingdom', 'Netherlands', 'Finland']
+    for i in range(len(proxies['ip'])):
+        if proxies['country'][i] in dach:
+            proxieslist.append('{}:{}'.format(
+                proxies['ip'][i], proxies['port'][i]))
+        # print('IP: {}\nPORT: {}\nCOUNTRY: {}'.format(
+        #     proxies['ip'][i], proxies['port'][i], proxies['country'][i]))
+    print('Done scraping proxylist.')
+    return proxieslist

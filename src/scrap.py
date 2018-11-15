@@ -32,17 +32,17 @@ def get_divlinks_dic_from_leaguepage(link):
     return divlinks_dic
 
 
-def get_teamlinks_dic_from_group(grouplink,proxy_list):
+def get_teamlinks_dic_from_group(grouplink, proxy_list):
     # connect
     url = grouplink
     headers = {
         'User-Agent': generate_user_agent(device_type=("desktop", "smartphone"))}
-    #use proxies to connect
+    # use proxies to connect
     proxl = proxy_list
     website = None
     while website is None:
         try:
-            #print('connect')
+            # print('connect')
             http = random.choice(proxl)
             logging.warning(proxl)
             proxies = {
@@ -50,8 +50,9 @@ def get_teamlinks_dic_from_group(grouplink,proxy_list):
                 'https': 'socks5://' + http
             }
 
-            website = requests.get(url, headers=headers,proxies=proxies,timeout=2)
-            #website.raise_for_status()
+            website = requests.get(url, headers=headers, proxies=proxies, timeout=2)
+            website.raise_for_status()
+
             # print(proxies)
             # print(headers)
         except:
@@ -71,7 +72,7 @@ def get_teamlinks_dic_from_group(grouplink,proxy_list):
         except:
             pass
     new_proxies = proxl
-    return teamlinks_dic, new_proxies ,http
+    return teamlinks_dic, new_proxies, http
 
 
 def teamdic_change_datestrings_to_timedate_objects(dic):
@@ -98,7 +99,7 @@ def teamdic_change_datestrings_to_timedate_objects(dic):
     return (date_team_dic)
 
 
-def get_teamdic_from_teamlink(link):
+def get_teamdic_from_teamlink(link, proxy_list):
     # enter when the 99dmg season starts, used to check if player was in the team at season start
     # season10 start: https://csgo.99damage.de/de/news/74090-jetzt-anmelden-fuer-die-99damage-liga
     # 99dmg season 10 started at 28. September 2018 (18: 00 Uhr)
@@ -109,12 +110,27 @@ def get_teamdic_from_teamlink(link):
     # connect
     url = link
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
-    website = requests.get(url, headers=headers)
-    website.raise_for_status()
-    # get html
-    team_soup = bs4.BeautifulSoup(website.text, features="html.parser")
+        'User-Agent': generate_user_agent(device_type=("desktop", "smartphone"))}
+    proxl = proxy_list
 
+    website = None
+    while website is None:
+        try:
+            # print('connect')
+            http = random.choice(proxl)
+            logging.warning(proxl)
+            proxies = {
+                'http': 'socks5://' + http,
+                'https': 'socks5://' + http
+            }
+            website = requests.get(url, headers=headers, proxies=proxies, timeout=2)
+            website.raise_for_status()
+        except:
+            proxl.remove(http)
+            pass
+
+    # get html
+    team_soup = bs4.BeautifulSoup(website.text, features="lxml")
     # {'steam_id': player_steamid, 'join_dates': [], 'leave_dates': [], 'time_in_team': '', 'join_afterSeasonStart': '-', 'leave_afterSeasonStart': '-'}
     team_dic = {}
 
@@ -133,10 +149,12 @@ def get_teamdic_from_teamlink(link):
         if teamlog_playername:
             if '(admin)' not in teamlog_playername:
                 team_dic.setdefault(teamlog_playername, {
-                    'steam_id': '-', 'join_dates': [], 'leave_dates': [], 'time_in_team': '', 'join_afterSeasonStart': False, 'leave_afterSeasonStart': False})
+                    'steam_id': '-', 'join_dates': [], 'leave_dates': [], 'time_in_team': '',
+                    'join_afterSeasonStart': False, 'leave_afterSeasonStart': False})
         if teamlog_target:
             team_dic.setdefault(teamlog_target, {
-                'steam_id': '-', 'join_dates': [], 'leave_dates': [], 'time_in_team': '', 'join_afterSeasonStart': False, 'leave_afterSeasonStart': False})
+                'steam_id': '-', 'join_dates': [], 'leave_dates': [], 'time_in_team': '',
+                'join_afterSeasonStart': False, 'leave_afterSeasonStart': False})
 
         if (teamlog_action == 'member_join' or teamlog_action == 'create') and teamlog_playername:
             team_dic[teamlog_playername]['join_dates'].append(
@@ -184,9 +202,8 @@ def get_teamdic_from_teamlink(link):
                 team_dic[active_team_playernames[i].text]['steam_id'] = active_team_steamids[i].text
     except:
         pass
-
+    new_proxies = proxl
     if len(team_dic) == 0:
-        return 'no players, team deleted'
+        return 'no players, team deleted', new_proxies, http
     else:
-        return (team_dic)
-
+        return team_dic, new_proxies, http

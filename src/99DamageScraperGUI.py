@@ -74,7 +74,7 @@ class DamageScraperGUI:
 
         self.delay_team_entry = Entry(
             master, width=3, bd=3, background='#7b8189')
-        self.delay_team_entry.insert(0, 10)
+        self.delay_team_entry.insert(0, 0)
         self.delay_team_entry.grid(row=3, column=1)
 
         self.scrap_league_button = Button(
@@ -82,7 +82,7 @@ class DamageScraperGUI:
         self.scrap_league_button.grid(
             row=3, column=2, sticky=W+E)
 
-        self.runtime_label = Label(master, text="250 Min")
+        self.runtime_label = Label(master, text="38 Min",background='#353c47',fg="white")
         self.runtime_label.grid(row=3, column=3)
         # second row (button input saveselcetor label with time)
 
