@@ -81,7 +81,7 @@ def get_teamdic_from_teamlink(link):
     # use as input               28.09.2018 18:00 +0200
     # IMPORTANT TODO change for next season
     dmgseasonstart_datetime = datetime.strptime(
-        '28.09.2018 18:00 +0200', '%d.%m.%Y %H:%M %z')
+        '01.03.2019 18:00 +0100', '%d.%m.%Y %H:%M %z')
     # connect
     url = link
     headers = {
@@ -165,4 +165,3 @@ def get_teamdic_from_teamlink(link):
         return 'no players, team deleted'
     else:
         return (team_dic)
-
